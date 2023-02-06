@@ -1,25 +1,24 @@
+import { MongoClient } from 'mongodb';
 import MeetupList from '../components/meetups/MeetupList';
 
-const DUMMY_MEETUPS = [
-	{
-		'id': 'mx1',
-    'image': 'https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'title': 'This is first image',
-    'address': 'This is meetup address'
-	},
-	{
-		'id': 'mx2',
-    'image': 'https://images.pexels.com/photos/235986/pexels-photo-235986.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-    'title': 'This is second image',
-    'address': 'This is meetup address second'
-	}
-];
-
-export async function getServerSideProps() {
+export async function getStaticProps() {
+	
+	const client = await MongoClient.connect('mongodb+srv://walayat37:walayat37Mongo@expensetracker.ijusz.mongodb.net/?retryWrites=true&w=majority');
+	const db = client.db();
+	const meetupsCollection = db.collection('meetups');
+  const meetups = await meetupsCollection.find().toArray();
+	client.close();
 	return {
 		props: {
-			meetups: DUMMY_MEETUPS
-		}
+			meetups: meetups.map(meetup => ({
+				'id': meetup._id.toString(),
+				'title': meetup.title,
+				'image': meetup.image,
+				'address': meetup.address,
+				'description': meetup.description,
+				}))
+		},
+		revalidate: 1
 	}
 }
 
