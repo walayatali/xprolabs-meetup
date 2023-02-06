@@ -15,9 +15,17 @@ const DUMMY_MEETUPS = [
 	}
 ];
 
+export async function getServerSideProps() {
+	return {
+		props: {
+			meetups: DUMMY_MEETUPS
+		}
+	}
+}
+
 function HomePage(props)	{
 	return (
-		<MeetupList meetups={DUMMY_MEETUPS}/>
+		<MeetupList meetups={props.meetups}/>
 	)
 }
 
